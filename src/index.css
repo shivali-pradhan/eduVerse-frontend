@@ -1,6 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #00838f
+  --color-primary: #00838f;
+  --color-primaryLight: #e0f2f1;
 }
+
+*::after {
+  box-sizing: border-box;
+}
+
+
 

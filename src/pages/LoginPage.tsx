@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
+import { useAuth } from "../context/AuthContext";
 import InputField from "../components/InputField";
 import { loginUser } from "../api/login";
 
@@ -9,6 +10,7 @@ export default function LoginPage() {
 
   const inputStyle = "w-full outline-none text-lg text-slate-600 pl-8 pr-2 py-1 bg-transparent border-b-2 border-[#54779256] transition duration-300 ease focus:border-primary";
   
+  const auth = useAuth();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -61,15 +63,10 @@ export default function LoginPage() {
       console.log("Register data:", formData);
 
       try {
-        const response = await loginUser(formData);
-        if (response.access_token) {
-          console.log("Login successful: token:", response.access_token);
-          localStorage.setItem("access_token", response.access_token);
-          navigate('/');
-        } else if (response.detail) {
-          setLoginError(response.detail)
-        }
-      } catch(err) {
+        console.log("inside try block")
+        auth.loginAction(formData);
+      }
+       catch(err) {
         console.log(err)
       }
       

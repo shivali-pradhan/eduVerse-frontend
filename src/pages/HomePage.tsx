@@ -1,21 +1,14 @@
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext/AuthContext";
 
 export default function HomePage() {
 
   const auth = useAuth();
-  // const [user, setUser] = useState({
-  //   firstName: "",
 
-  // });
-
-  // if (auth.user) {
-  //   setUser(auth.user);
-  // }
   return (
     <>
       <h1>Home</h1>
 
-      <h3>Hi, {auth.user ? auth.user.firstName : "User" }</h3>
+      <h3>Hi, {auth.user ? auth.user.first_name : "User" }</h3>
     </>
   )
 }

@@ -4,17 +4,20 @@ interface RegisterData {
   email: string;
   username: string;
   password: string;
+  role: string
 }
 
-function matchRegisterDataFields(registerData: RegisterData) {
+function preprocess(registerData: RegisterData) {
   const payload : { [key: string]: string } = {};
+
   for (let field in registerData) {
     const fieldName = field as keyof RegisterData;
     if (fieldName === "firstName") {
-      payload["first_name"] = registerData[fieldName];
+      payload["first_name"] = registerData[fieldName][0].toUpperCase() + registerData[fieldName].slice(1);
     } else if (fieldName === "lastName") {
-      payload["last_name"] = registerData[fieldName];
-    } else {
+      payload["last_name"] = registerData[fieldName][0].toUpperCase() + registerData[fieldName].slice(1) || "";
+    } else if (fieldName === "role") continue;
+    else {
       payload[fieldName] = registerData[fieldName];
     }
   }
@@ -22,14 +25,22 @@ function matchRegisterDataFields(registerData: RegisterData) {
   return payload;
 }
 
-export async function registerStudent(registerData: RegisterData) {
+export async function registerUser(registerData: RegisterData) {
   
-  console.log(registerData)
-  const payload = matchRegisterDataFields(registerData);
-  console.log(payload)
+  console.log("Register data:", registerData)
+  let payload = preprocess(registerData);
+  console.log("Payload", payload)
 
+  let URL = '';
+  if (registerData.role === "STUDENT") URL = 'http://localhost:8000/students';
+  else if (registerData.role === "INSTRUCTOR") URL = 'http://localhost:8000/instructors';
+  else {
+    console.log("Invalid role");
+    return;
+  }
+  console.log(URL);
   try {
-    const response = await fetch('http://localhost:8000/students', {
+    const response = await fetch(URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -37,11 +48,12 @@ export async function registerStudent(registerData: RegisterData) {
       body: JSON.stringify(payload)
     });
     const data = await response.json();
-    return data;
+    if (data.id) return {newUser: data};
+    else if (data.detail) return {error: data.detail};
+    else return {error: "Could not register. Please try again!"};
   }
   catch(err) {
     console.log(err);
   }
-  
   
 }

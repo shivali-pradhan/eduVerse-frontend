@@ -1,13 +1,16 @@
 @import "tailwindcss";
+@import 'react-toastify/dist/ReactToastify.css';
 
 @theme {
   --color-primary: #00838f;
   --color-primaryLight: #e0f2f1;
 }
 
+/* *,
+*::before,
 *::after {
   box-sizing: border-box;
-}
+} */
 
 
 

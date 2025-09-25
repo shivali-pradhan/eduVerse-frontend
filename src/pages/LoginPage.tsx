@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-
-import { useAuth } from "../context/AuthContext";
+import { validateUsername, validatePassword } from "../utils/validations";
+import { useAuth } from "../context/AuthContext/AuthContext";
 import InputField from "../components/InputField";
-import { loginUser } from "../api/login";
+import { toast } from 'react-toastify';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -11,6 +11,7 @@ export default function LoginPage() {
   const inputStyle = "w-full outline-none text-lg text-slate-600 pl-8 pr-2 py-1 bg-transparent border-b-2 border-[#54779256] transition duration-300 ease focus:border-primary";
   
   const auth = useAuth();
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -23,18 +24,19 @@ export default function LoginPage() {
   function handlePwdVisibility() {
     setPwdVisibility((prev) => !prev);
   }
-
-  function validateFields(e: React.ChangeEvent<HTMLInputElement>) {
+  
+  function clearErrors(e: React.ChangeEvent<HTMLInputElement>) {
     const {name, value} = e.target;
-    if (!value.trim()) {
-      setErrors({...errors, [name]: `${name[0].toUpperCase() + name.slice(1)} is required`});
-    } else {
-      setErrors({...errors, [name]: ""});
-    }
+    if (value.trim()) {
+      setErrors(prev => {
+        return {...prev, [name]: ""}
+      });
+    } 
   }
+  
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    validateFields(e);
+    clearErrors(e);
     setFormData({...formData, [e.target.name]: e.target.value});
   }
 
@@ -44,12 +46,17 @@ export default function LoginPage() {
     const newErrors = {username: "", password: ""};
     let isFormValid = true;
 
-    if(!formData.username) {
+    if(!formData.username.trim()) {
       newErrors.username = "Username is required";
       setErrors((prev) => {
         return {...prev, username: newErrors.username}
       });
       isFormValid = false;
+    } else {
+      if (validateUsername(formData.username)) {
+        isFormValid = false;
+        setLoginError("Invalid Username");
+      }
     }
     if(!formData.password) {
       newErrors.password = "Password is required";
@@ -57,16 +64,22 @@ export default function LoginPage() {
         return {...prev, password: newErrors.password}
       });
       isFormValid = false;
+    } else {
+      if (validatePassword(formData.password)) {
+        isFormValid = false;
+        setLoginError("Invalid Password");
+      }
     }
 
     if(isFormValid) {
-      console.log("Register data:", formData);
+      console.log("Entered login data:", formData);
 
       try {
-        console.log("inside try block")
-        auth.loginAction(formData);
+        const res = await auth.loginAction(formData);
+        if (!res) toast.success("Login Successful");
+        else if (res.error) setLoginError(res.error);
       }
-       catch(err) {
+      catch(err) {
         console.log(err)
       }
       
@@ -75,7 +88,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <div className="h-screen bg-gradient-to-br from-[#b8f2f7] via-[#f3feff] to-[#9cd0d6] flex justify-center items-center">
+      <div className="bg-gradient-to-br from-[#b8f2f7] via-[#f3feff] to-[#9cd0d6] flex justify-center items-center">
         <div className="relative flex flex-col bg-white/80 shadow-md w-96 rounded-2xl my-6 px-3 py-4">
           <div className="relative m-2.5 items-center flex flex-col justify-center rounded-md text-slate-800">
             <div className="text-[#5abbcabd] w-20 h-20 rounded-full border-4 border-[#5abbcabd] flex items-center justify-center">
@@ -111,13 +124,17 @@ export default function LoginPage() {
 
               
             </div>
-            {loginError && <div className="px-6 text-red-500 flex gap-1 items-center justify-center">
-              <span className="material-icons-outlined !text-lg">error</span>
-              <span>{loginError}</span>
+            <div className="px-6">
+            {loginError && <div className="border-1 border-red-600 bg-red-100 px-3 py-2 mt-4 rounded-xl">
+              <div className="mt-1 px-1 text-sm text-red-500 flex gap-1 items-center">
+                <span className="material-icons-outlined !text-lg">error</span>
+                <span className="text-base">{loginError}</span>
+              </div>
             </div>}
+            </div>
             
 
-
+            
             <div className="p-6 pt-6">
               
               <button 
@@ -125,7 +142,6 @@ export default function LoginPage() {
                 className="w-full py-2 px-4 cursor-pointer rounded-lg bg-primary text-center font-medium text-white transition-all shadow-md 
                   hover:shadow-lg active:bg-primary hover:bg-primary/90 active:shadow-none 
                   disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                
               >
                 Sign In
               </button>

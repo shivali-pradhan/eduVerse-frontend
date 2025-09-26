@@ -253,8 +253,8 @@ export default function RegisterPage() {
             </div>
 
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-              <p className="text-lg font-semibold text-slate-500 mr-4">Select your role:</p>
+            <div className="px-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+              <p className="text-lg font-semibold text-slate-500 mr-3">Select your role:</p>
               {/* Student */}
               <label className="relative flex items-center cursor-pointer">
                 <input

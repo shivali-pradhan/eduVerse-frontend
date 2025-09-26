@@ -3,7 +3,8 @@ import RootLayout from "./RootLayout";
 import HomePage from "./pages/HomePage";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
-import AllCourses from "./pages/Course/AllCoursesPage";
+import AllCoursesPage from "./pages/Course/AllCoursesPage";
+import CourseDetailsPage from "./pages/Course/CourseDetailsPage"
 
 export const router = createBrowserRouter([
   {
@@ -21,7 +22,11 @@ export const router = createBrowserRouter([
       },    
       {
         path: "courses",
-        Component: AllCourses
+        Component: AllCoursesPage,
+      },
+      {
+        path: "courses/:id",
+        Component: CourseDetailsPage,
       } 
     ]
   },

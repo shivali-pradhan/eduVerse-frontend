@@ -1,46 +1,41 @@
-export type CourseCardProps = {
+import { useNavigate } from "react-router";
+
+interface CourseCardProps {
+  courseID: number;
   imageUrl?: string;
   title: string;
   description: string;
   duration: number;
+  credits: number;
   instructorName: string;
-  instructorAvatar?: string;
   onView?: () => void;
   onEnroll?: () => void;
   className?: string;
 };
-// Tailwind-based responsive course card. Uses the teal theme for primary actions.
-// Example usage:
-// <CourseCard
-//   imageUrl="/images/course-1.jpg"
-//   title="Intro to Signal Processing"
-//   description="Learn the fundamentals of signals, systems and frequency analysis in a hands-on way."
-//   instructorName="Dr. A. Sharma"
-//   instructorAvatar="/images/instructor.jpg"
-//   onView={() => router.push('/courses/1')}
-//   onEnroll={() => enrollCourse(1)}
-// />
 
 export default function CourseCard({
+  courseID,
   imageUrl,
   title,
   description,
   duration,
+  credits,
   instructorName,
-  instructorAvatar,
   onView,
   onEnroll,
   className = "",
 }: CourseCardProps) {
+
+  const navigate = useNavigate();
   return (
     <article
-      className={`max-w-sm bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col ${className}`}
+      className={`max-w-sm bg-white rounded-lg shadow-lg hover:shadow-xl overflow-hidden flex flex-col ${className}`}
       aria-label={`Course card: ${title}`}
     >
       {/* Image */}
       <div className="h-44 w-full shrink-0 overflow-hidden bg-zinc-100">
         <img
-          src={'src/assets/images/course-2-img.jpeg'}
+          src={'src/assets/images/course-img.jpg'}
           alt={`Course cover for ${title}`}
           className="w-full h-full object-cover transition-transform duration-300 ease-in-out hover:scale-105"
           loading="lazy"
@@ -49,9 +44,9 @@ export default function CourseCard({
       {/* Content */}
       <div className="p-4 flex-1 flex flex-col gap-4">
         <header>
-          <div className="flex justify-between items-center pr-1">
+          <div className="flex justify-between items-center">
             <h3 className="text-xl font-bold leading-tight text-slate-600 line-clamp-2">{title}</h3>
-            <span className="text-sm text-slate-500 font-medium">{duration} mins</span>
+            <span className="ml-2 mr-1  text-slate-500 font-medium text-nowrap">{duration} mins</span>
           </div>
           
           <p className="mt-2 text-sm text-zinc-600 line-clamp-3">{description}</p>
@@ -79,20 +74,27 @@ export default function CourseCard({
                   .join("")}
               </div>
             )} */}
-            <div className="text-sm">
-              <span className="text-slate-600 mr-2">Created by:</span>
-              <span className="text-slate-700 font-medium">{instructorName}</span>
-              {/* <p className="text-xs text-zinc-500">Instructor</p> */}
+            <div className="flex flex-col gap-1">
+             
+              <div className="">
+                <span className="text-slate-700 mr-2">Created by:</span>
+                <span className="text-slate-700 font-medium">{instructorName}</span>
+              </div>
+              <div className="">
+                <span className="text-slate-700 mr-1">Credits:</span>
+                <span className="text-slate-700 font-medium">{credits}</span>
+              </div>
             </div>
+            
           </div>
           
         </div>
         <div className="flex items-center gap-3 w-full">
           <button
-            onClick={onView}
+            onClick={() => navigate(`/courses/${courseID}`)}
             type="button"
             className="cursor-pointer flex flex-1 items-center justify-center px-3 py-1.5 rounded-md border border-primary hover:bg-primaryLight font-medium text-primary">
-            View
+            View 
           </button>
           <button
             onClick={onEnroll}

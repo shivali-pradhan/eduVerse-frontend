@@ -45,7 +45,6 @@ export default function AuthProvider({children}: AuthProviderProps) {
     else {
       setToken(null);
       setUser(null);
-      console.log("No access token");
     }
   };
   
@@ -69,16 +68,15 @@ export default function AuthProvider({children}: AuthProviderProps) {
       });
 
       const data = await response.json();
-      console.log(data);
+      console.log("Response from login endpoint", data);
 
       if (data.access_token) {
         localStorage.setItem("access_token", data.access_token);
         fetchCurrentUser(data.access_token);
         navigate("/");
-        return null;
       }
       else if (data.detail) return {error: data.detail};
-
+      else return {error: "Could not login. Please try again!"};
     }
     catch(err) {
       console.log("Login failed");

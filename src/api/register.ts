@@ -7,7 +7,7 @@ interface RegisterData {
   role: string
 }
 
-function preprocess(registerData: RegisterData) {
+function preprocessFormData(registerData: RegisterData) {
   const payload : { [key: string]: string } = {};
 
   for (let field in registerData) {
@@ -15,20 +15,19 @@ function preprocess(registerData: RegisterData) {
     if (fieldName === "firstName") {
       payload["first_name"] = registerData[fieldName][0].toUpperCase() + registerData[fieldName].slice(1);
     } else if (fieldName === "lastName") {
-      payload["last_name"] = registerData[fieldName][0].toUpperCase() + registerData[fieldName].slice(1) || "";
+      payload["last_name"] = registerData[fieldName][0].toUpperCase() + registerData[fieldName].slice(1);
     } else if (fieldName === "role") continue;
     else {
       payload[fieldName] = registerData[fieldName];
     }
   }
-  console.log(payload);
   return payload;
 }
 
 export async function registerUser(registerData: RegisterData) {
   
   console.log("Register data:", registerData)
-  let payload = preprocess(registerData);
+  let payload = preprocessFormData(registerData);
   console.log("Payload", payload)
 
   let URL = '';
@@ -38,7 +37,6 @@ export async function registerUser(registerData: RegisterData) {
     console.log("Invalid role");
     return;
   }
-  console.log(URL);
   try {
     const response = await fetch(URL, {
       method: 'POST',

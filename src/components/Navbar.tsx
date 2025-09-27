@@ -63,7 +63,7 @@ export default function Navbar() {
 
   return (
     <>
-    <nav className="block w-full bg-gray-50 shadow-md relative z-100">
+    <nav className="block w-full bg-gray-50 shadow-sm relative z-100">
       <div className="container flex items-center justify-between mx-auto">
         <div className="flex items-center gap-4">
           <button
@@ -118,14 +118,14 @@ export default function Navbar() {
 
           <div className={`${auth.user ? 'hidden' : 'block'} flex items-center gap-3 ml-6`}>
             <button
-              className="px-4 py-2 border-2 border-primary rounded-md text-slate-500 font-medium cursor-pointer
+              className="px-4 py-2 border-1 border-primary rounded-md font-semibold  text-primary cursor-pointer
                 hover:bg-primaryLight hover:text-primary"
               onClick={() => navigate("/login")}
             >
               Log in
             </button>
             <button
-              className="px-4 py-2.5 bg-primary rounded-md text-slate-100 font-medium cursor-pointer
+              className="px-4 py-2 bg-primary rounded-md font-semibold  text-slate-100 cursor-pointer
                 hover:bg-primary/80"
               onClick={() => navigate("/register")}
             >

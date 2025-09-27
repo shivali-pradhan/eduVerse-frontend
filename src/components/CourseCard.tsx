@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { Link } from "react-router";
 
 interface CourseCardProps {
   courseID: number;
@@ -6,7 +7,6 @@ interface CourseCardProps {
   title: string;
   description: string;
   duration: number;
-  credits: number;
   instructorName: string;
   onView?: () => void;
   onEnroll?: () => void;
@@ -19,7 +19,6 @@ export default function CourseCard({
   title,
   description,
   duration,
-  credits,
   instructorName,
   onView,
   onEnroll,
@@ -29,8 +28,9 @@ export default function CourseCard({
   const navigate = useNavigate();
   return (
     <article
-      className={`max-w-sm bg-white rounded-lg shadow-lg hover:shadow-xl overflow-hidden flex flex-col ${className}`}
+      className={`cursor-pointer max-w-sm bg-white hover:bg-gray-50 border-1 border-gray-200 rounded-lg shadow-lg hover:shadow-xl overflow-hidden flex flex-col ${className}`}
       aria-label={`Course card: ${title}`}
+      onClick={() => navigate(`/courses/${courseID}`)}
     >
       {/* Image */}
       <div className="h-44 w-full shrink-0 overflow-hidden bg-zinc-100">
@@ -77,12 +77,8 @@ export default function CourseCard({
             <div className="flex flex-col gap-1">
              
               <div className="">
-                <span className="text-slate-700 mr-2">Created by:</span>
+                <span className="text-slate-700 mr-2">Instructor:</span>
                 <span className="text-slate-700 font-medium">{instructorName}</span>
-              </div>
-              <div className="">
-                <span className="text-slate-700 mr-1">Credits:</span>
-                <span className="text-slate-700 font-medium">{credits}</span>
               </div>
             </div>
             
@@ -90,12 +86,11 @@ export default function CourseCard({
           
         </div>
         <div className="flex items-center gap-3 w-full">
-          <button
-            onClick={() => navigate(`/courses/${courseID}`)}
-            type="button"
-            className="cursor-pointer flex flex-1 items-center justify-center px-3 py-1.5 rounded-md border border-primary hover:bg-primaryLight font-medium text-primary">
-            View 
-          </button>
+          <Link to={`/courses/${courseID}`} 
+              className="cursor-pointer flex-1 flex items-center justify-center px-3 py-1.5 rounded-md border border-primary hover:bg-primaryLight font-medium text-primary"
+            >
+            View
+          </Link>
           <button
             onClick={onEnroll}
             type="button"

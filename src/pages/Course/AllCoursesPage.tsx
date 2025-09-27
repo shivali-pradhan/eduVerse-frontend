@@ -46,6 +46,20 @@ export default function AllCoursesPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState("");
   const options = ["name", "credits", "duration"];
+  const sortFields = [
+    {
+      field: "name",
+      text: "Course title",
+    },
+    {
+      field: "duration",
+      text: "Duration"
+    },
+    {
+      field: "instructor.first_name",
+      text: "Instructor"
+    }
+  ];
   const handleSelect = (option: string) => {
     setSelected(option);
     setIsOpen(false);
@@ -54,43 +68,15 @@ export default function AllCoursesPage() {
   return (
     <>
     <div className="bg-gradient-to-br from-[#ffffff] via-[#ffffff] to-[#ffffff]">
-      <div className="w-44">
-        <div className="relative">
-          <button
-            className="flex items-center justify-center text-slate-600 font-medium border border-gray-300 rounded-lg px-6 py-2 cursor-pointer bg-white hover:shadow-sm hover:bg-primaryLight"
-            onClick={() => setIsOpen((prev) => !prev)}
-          >
-            <span>Sort</span>
-          </button>
-          
-          {/* Dropdown list */}
-          {isOpen && (
-            <ul className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
-              {options.map((option, index) => (
-                <li
-                  key={index}
-                  onClick={() => handleSelect(option)}
-                  className={`px-4 py-2 text-slate-600 cursor-pointer hover:bg-primaryLight ${
-                    option === selected ? "bg-primaryLight text-primary font-medium" : ""
-                  }`}
-                >
-                  {option}
-                </li>
-              ))}
-            </ul>
-          )}
-      </div>
-
-
-    </div>
-  
-      <div className="flex items-center w-full justify-between py-2 px-8">
-        <h1 className="text-3xl text-center my-3 font-semibold text-primary">All Courses</h1>
+      
+      <div className="flex items-center w-full justify-between py-2 px-8 bg-slate-100">
+        <h1 className="text-2xl text-center my-3 font-semibold text-primary">All Courses</h1>
+        <div className="flex items-center gap-2">
         <div className="flex items-center gap-2 relative">
           
           <input 
             type="text"
-            className="peer flex-1 bg-white w-84 px-4 py-2 rounded-full outline-none border-1 border-gray-200 focus:shadow-sm text-slate-700"
+            className="peer flex-1 bg-white w-84 px-4 py-2 rounded-full outline-none border-1 border-gray-300 focus:shadow-sm text-slate-700"
             placeholder="Search courses..."
             onChange={handleSearchInputChange}
           />
@@ -102,10 +88,40 @@ export default function AllCoursesPage() {
           </button>
             
         </div>
+        <div className="">
+          <div className="relative flex flex-col items-end">
+            <button
+              className="flex items-center justify-center text-slate-600 font-medium border border-gray-300 rounded-full px-6 py-2 cursor-pointer bg-white  hover:bg-gray-50"
+              onClick={() => setIsOpen((prev) => !prev)}
+            >
+              <span>Sort</span>
+              <span className="material-icons">arrow_drop_down</span>
+            </button>
+            
+          
+            {isOpen && (
+              <ul className="absolute top-10 w-40 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+                {options.map((option, index) => (
+                  <li
+                    key={index}
+                    onClick={() => handleSelect(option)}
+                    className={`px-4 py-2 text-slate-600 cursor-pointer hover:bg-primaryLight ${
+                      option === selected ? "bg-primaryLight text-primary font-medium" : ""
+                    }`}
+                  >
+                    {option}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+        </div>
+  
       </div>
     
      
-      <div className="pt-12 pb-20 px-3 sm:px-4 md:px-8 lg:px-14">
+      <div className="pt-12 pb-20 px-3 sm:px-4 md:px-8 lg:px-14 ">
         <div className={`text-xl text-slate-600 ${isSearchClicked ? 'block': 'hidden'}`}>
           {courses.length ? `Search results: ${courses.length}` : (
             <div className="my-4 flex flex-col items-center justify-center">
@@ -126,8 +142,7 @@ export default function AllCoursesPage() {
                   courseID={course.id}
                   title={course.name} 
                   description={course.description} 
-                  duration={course.duration} 
-                  credits={course.credits}
+                  duration={course.duration}
                   instructorName={course.creator.first_name + ' ' + course.creator.last_name}
                 />
               );
@@ -143,7 +158,6 @@ export default function AllCoursesPage() {
           />
         }
       </div>
-        
       
       
     </div>

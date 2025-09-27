@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { registerUser } from "../api/register";
-import { validatePassword, validateEmail, validateUsername } from "../utils/validations";
+import { validateFirstName, validateLastName, validatePassword, validateEmail, validateUsername } from "../utils/validations";
 import { toast } from 'react-toastify';
 
 export default function RegisterPage() {
@@ -44,31 +44,59 @@ export default function RegisterPage() {
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
   
   function clearErrors(e: React.ChangeEvent<HTMLInputElement>) {
-    const {name, value} = e.target;
+    const fieldName = e.target.name;
+    const value = e.target.value;
     if (value.trim()) {
       setErrors(prev => {
-        return {...prev, [name]: ""}
+        return {...prev, [fieldName]: ""}
       });
     } 
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    clearErrors(e);
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const fieldName = e.target.name;
+    const value = e.target.value;
+    setFormData({ ...formData, [fieldName]: value });
+
+    if (fieldName === "firstName" && !validateFirstName(value)) clearErrors(e);
+    else if (fieldName === "lastName" && !validateLastName(value)) clearErrors(e);
+    else if (fieldName === "email" && !validateEmail(value)) clearErrors(e);
+    else if (fieldName === "username" && !validateUsername(value)) clearErrors(e);
     
-    if (e.target.name === "password") {
+    else if (fieldName === "password") {
       setErrors(prev => {
-        return {...prev, password: validatePassword(e.target.value)?.error || ""};
+        return {...prev, password: validatePassword(value)?.error || ""};
       });
-      if (!e.target.value.trim()) {
+      if (!value.trim()) {
         setErrors(prev => {
           return {...prev, password: ""}
         });
       }
     }
   }
+  function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
+    const fieldName = e.target.name;
+    const value = e.target.value;
+    if (fieldName === "firstName" && validateFirstName(value)) {
+      setErrors(prev => {
+        return {...prev, firstName: validateFirstName(value)!.error}
+      });
+    } else if (fieldName === "lastName" && validateLastName(value)) {
+      setErrors(prev => {
+        return {...prev, lastName: validateLastName(value)!.error}
+      });
+    } else if (fieldName === "email" && validateEmail(value)) {
+      setErrors(prev => {
+        return {...prev, email: validateEmail(value)!.error}
+      });
+    } else if (fieldName === "username" && validateUsername(value)) {
+      setErrors(prev => {
+        return {...prev, username: validateUsername(value)!.error}
+      });
+    }
+  }
   function handleRoleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setFormData({...formData, [e.target.name]: e.target.value.toUpperCase() });
+    setFormData({...formData, [e.target.name]: e.target.value.toUpperCase()});
   }
   function handlePasswordVisibility() {
     setPasswordVisibility((prev) => !prev);
@@ -77,47 +105,36 @@ export default function RegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     let isFormValid = true;
+
     for (let field in formData) {
       const fieldName = field as keyof FormData;
       if (!formData[fieldName].trim()) {
-        if (fieldName === "lastName") continue;
         isFormValid = false;
         if (fieldName === "firstName") {
           setErrors(prev => {
-            return {...prev, [fieldName]: `First name is required`}
+            return {...prev, [fieldName]: `First name is required`};
+          });
+        } else if (fieldName === "lastName") {
+          setErrors(prev => {
+            return {...prev, [fieldName]: `Last name is required`};
           });
         } else {
           setErrors(prev => {
             return {...prev, [fieldName]: `${fieldName[0].toUpperCase() + fieldName.slice(1)} is required`}
           });
-        }
-        
+        } 
       }
     }
-
-    if (validatePassword(formData.password)) {
-      isFormValid = false;
-      setErrors(prev => {
-        return {...prev, password: validatePassword(formData.password)!.error}
-      });
-     
-    }
-    if (validateEmail(formData.email)) {
-      isFormValid = false;
-      setErrors(prev => {
-        return {...prev, email: validateEmail(formData.email)!.error}
-      });
-      
-    }
-    if (validateUsername(formData.username)) {
-      isFormValid = false;
-      setErrors(prev => {
-        return {...prev, username: validateUsername(formData.username)!.error}
-      });
-    }
+    if (
+      validateFirstName(formData.firstName) || 
+      validateLastName(formData.lastName) || 
+      validateEmail(formData.email) || 
+      validateUsername(formData.username) ||
+      validatePassword(formData.password)
+    ) isFormValid = false;
 
     if (isFormValid) {
-      console.log("Register data:", formData);
+      console.log("Valid register form:", formData);
       const response = await registerUser(formData);
       if (response?.newUser) {
         toast.success("Registration Successful. Please login to continue");
@@ -151,6 +168,7 @@ export default function RegisterPage() {
                     value={formData.firstName}
                     className={labelledInputStyle}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder=""
                   />
                   <label htmlFor="firstName" className={labelStyle}>
@@ -170,11 +188,16 @@ export default function RegisterPage() {
                   value={formData.lastName}
                   className={labelledInputStyle}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder=""
                 />
                 <label htmlFor="lastName" className={labelStyle}>
-                  Last Name
+                  Last Name*
                 </label>
+                { errors.lastName && <div className={validationErrorStyle}>
+                  <span className="material-icons-outlined !text-lg">error</span>
+                  <span>{errors.lastName}</span>
+                </div>}
               </div>
               
             </div>
@@ -188,6 +211,7 @@ export default function RegisterPage() {
                   value={formData.email}
                   className={labelledInputStyle}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder=""
                 />
                 <label htmlFor="email" className={labelStyle}>
@@ -209,6 +233,7 @@ export default function RegisterPage() {
                   value={formData.username}
                   className={labelledInputStyle}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder=""
                 />
                 <label htmlFor="username" className={labelStyle}>
